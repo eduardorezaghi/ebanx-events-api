@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "ebanx-events-api"
+version = "0.1.0"
+description = "Take-Home assessment for Ebanx Dev role."
+authors = ["Eduardo Rezaghi <eduardo.rezaghi@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standard"], version = "^0.115.3"}
+pytest = "^8.3.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
