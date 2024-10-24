@@ -47,7 +47,7 @@ async def get_balances(
     else:
         balances = service.get_all_balances()
 
-    if not balances:
+    if balances is None:
         return Response(
             content="0",
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
