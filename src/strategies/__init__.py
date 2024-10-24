@@ -1,3 +1,1 @@
-from .event_process_strategy import BalanceProcessStrategy
-
-__all__ = ["BalanceProcessStrategy"]
+from .event_process_strategy import EventProcessStrategy as EventProcessStrategy
