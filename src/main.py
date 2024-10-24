@@ -9,9 +9,11 @@ base_router = APIRouter(
     tags=["base"],
 )
 
+
 @base_router.post("/reset", status_code=200)
 async def reset_api_data():
     return None
+
 
 def create_application() -> FastAPI:
     app = FastAPI()
