@@ -12,4 +12,4 @@ class TestBalance:
 
         # Assert
         assert response.status_code == 200
-        assert response.json() == None
+        assert response.json() is None

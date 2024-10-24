@@ -1,8 +1,9 @@
 from typing import Union
 
-from fastapi import FastAPI, APIRouter, Depends
+from fastapi import APIRouter, Depends, FastAPI
 
-from api import balances, events
+from src.api import balances, events
+
 
 def create_application() -> FastAPI:
     app = FastAPI()

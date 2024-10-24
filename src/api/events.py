@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import fastapi
 
-from strategies import BalanceProcessStrategy
+from src.strategies import BalanceProcessStrategy
 
 router = APIRouter(
     prefix="/event",
