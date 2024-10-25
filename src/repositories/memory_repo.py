@@ -10,6 +10,9 @@ class BalanceRepository:
             for obj in objs:
                 self.balances[str(obj.account_id)] = obj
 
+    def clear(self):
+        self.balances = {}
+
     def create_balance(self, account_id: int, balance: Decimal) -> Balance:
         _balance = Balance(account_id=account_id, balance=Decimal(balance))
         self.balances[str(account_id)] = _balance

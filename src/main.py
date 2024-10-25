@@ -1,18 +1,22 @@
-from typing import Union
-
-from fastapi import APIRouter, Depends, FastAPI
+from fastapi import APIRouter, FastAPI, status
+from fastapi.responses import Response
 
 from src.api import balances, events
-
+from src.dependencies import global_balance_repo
 
 base_router = APIRouter(
     tags=["base"],
 )
 
 
-@base_router.post("/reset", status_code=200)
+@base_router.post("/reset")
 async def reset_api_data():
-    return None
+    global_balance_repo.clear()
+    return Response(
+        status_code=status.HTTP_200_OK,
+        media_type="text/plain",
+        content="OK",
+    )
 
 
 def create_application() -> FastAPI:
