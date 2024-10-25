@@ -1,7 +1,14 @@
 from abc import ABC, abstractmethod
+from decimal import Decimal
 from typing import Literal
 
-from src.models import BalanceDeposited, BalanceInfo, BalanceWithdrawn, EventRequest
+from src.models import (
+    BalanceDeposited,
+    BalanceInfo,
+    BalanceTransfered,
+    BalanceWithdrawn,
+    EventRequest,
+)
 from src.repositories import BalanceRepository
 
 
@@ -34,7 +41,7 @@ class DepositStrategy(EventStrategy):
                 id=balance.account_id,
                 balance=balance.balance,
             )
-        )
+        ).to_plain_text()
 
 
 class WithdrawStrategy(EventStrategy):
@@ -55,7 +62,41 @@ class WithdrawStrategy(EventStrategy):
                 id=_balance.account_id,
                 balance=_balance.balance,
             )
-        )
+        ).to_plain_text()
+
+
+class TransferStrategy(EventStrategy):
+    async def process(
+        self, balance_repo: BalanceRepository, event_request: EventRequest
+    ):
+        _origin = balance_repo.get_balance(str(event_request.origin))
+        _destination = balance_repo.get_balance(str(event_request.destination))
+
+        if _origin is None:
+            raise Exception("Origin account not found")
+
+        if _destination is None:
+            _destination = balance_repo.create_balance(
+                account_id=event_request.destination,
+                balance=Decimal(0),
+            )
+
+        try:
+            _origin.withdraw(event_request.amount)
+            _destination.deposit(event_request.amount)
+        except ValueError:
+            raise
+
+        return BalanceTransfered(
+            origin=BalanceInfo(
+                id=_origin.account_id,
+                balance=_origin.balance,
+            ),
+            destination=BalanceInfo(
+                id=_destination.account_id,
+                balance=_destination.balance,
+            ),
+        ).to_plain_text()
 
 
 # Context class
@@ -70,9 +111,12 @@ class EventProcessStrategy:
         self.strategies: dict[str, EventStrategy] = {
             "deposit": DepositStrategy(),
             "withdraw": WithdrawStrategy(),
+            "transfer": TransferStrategy(),
         }
 
-    def get_strategy(self, event_type: Literal["deposit", "withdraw"]) -> EventStrategy:
+    def get_strategy(
+        self, event_type: Literal["deposit", "withdraw", "transfer"]
+    ) -> EventStrategy:
         strategy = self.strategies.get(event_type)
         if strategy is None:
             raise ValueError(f"No strategy found for event type: {event_type}")
