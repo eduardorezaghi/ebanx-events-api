@@ -43,6 +43,20 @@ class BalanceInfo(BaseModel):
 class BalanceWithdrawn(BaseModel):
     origin: BalanceInfo
 
+    def to_plain_text(self) -> str:
+        return f'{{"origin": {{"id": "{self.origin.id}", "balance": {self.origin.balance}}}}}'
+
 
 class BalanceDeposited(BaseModel):
     destination: BalanceInfo
+
+    def to_plain_text(self) -> str:
+        return f'{{"destination": {{"id": "{self.destination.id}", "balance": {self.destination.balance}}}}}'
+
+
+class BalanceTransfered(BaseModel):
+    origin: BalanceInfo
+    destination: BalanceInfo
+
+    def to_plain_text(self) -> str:
+        return f'{{"origin": {{"id":"{self.origin.id}", "balance":{self.origin.balance}}}, "destination": {{"id":"{self.destination.id}", "balance":{self.destination.balance}}}}}'
