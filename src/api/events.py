@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Response
 from src.dependencies.repositories import get_balance_repository
 from src.models import EventRequest
 from src.repositories import BalanceRepository
-from src.strategies import EventProcessStrategy
+from src.services.balance_service import BalanceService
 
 router = APIRouter(
     prefix="/event",
@@ -21,12 +21,10 @@ async def process_event(
     _request: EventRequest,
     balance_repository: Annotated[BalanceRepository, Depends(get_balance_repository)],
 ):
-    strategy = EventProcessStrategy().get_strategy(_request.event_type)
+    service = BalanceService(balance_repository)
 
     try:
-        plaintext_resp = await strategy.process(
-            balance_repo=balance_repository, event_request=_request
-        )
+        plaintext_resp = await service.process_event(_request)
 
         return Response(
             status_code=fastapi.status.HTTP_201_CREATED,

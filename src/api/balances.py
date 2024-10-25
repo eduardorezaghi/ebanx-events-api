@@ -40,7 +40,7 @@ async def get_balances(
     ] = None,
 ) -> list[Balance] | str | Response:
     service = BalanceService(repository)
-    balances: list[Balance] | str | None = None
+    balances: list[Balance] | Balance | None = None
 
     if account_id:
         balances = service.get_user_balance(account_id)
@@ -51,6 +51,13 @@ async def get_balances(
         return Response(
             content=b"0",
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
+            media_type="text/plain",
+        )
+
+    if not isinstance(balances, list):
+        return Response(
+            content=str(balances.balance),
+            status_code=fastapi.status.HTTP_200_OK,
             media_type="text/plain",
         )
 

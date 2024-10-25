@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-from src.models.balance import Balance
+from src.models import Balance, EventRequest
 from src.repositories import BalanceRepository
+from src.strategies import EventProcessStrategy
 
 
 class BalanceService:
@@ -14,6 +15,14 @@ class BalanceService:
     def get_all_balances(self) -> list[Balance]:
         return self.balance_repository.get_all_balances() or []
 
-    def get_user_balance(self, user_id: int) -> str | None:
-        _balance = self.balance_repository.get_balance(str(user_id))
-        return str(_balance.balance) if _balance else None
+    def get_user_balance(self, user_id: int) -> Balance | None:
+        return self.balance_repository.get_balance(str(user_id))
+
+    async def process_event(
+        self,
+        event_request: EventRequest,
+    ):
+        service = BalanceService(self.balance_repository)
+        strategy = EventProcessStrategy().get_strategy(event_request.event_type)
+
+        return await strategy.process(service, event_request)

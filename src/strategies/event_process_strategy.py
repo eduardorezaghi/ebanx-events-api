@@ -9,7 +9,6 @@ from src.models import (
     BalanceWithdrawn,
     EventRequest,
 )
-from src.repositories import BalanceRepository
 
 
 class EventStrategy(ABC):
@@ -19,12 +18,10 @@ class EventStrategy(ABC):
 
 
 class DepositStrategy(EventStrategy):
-    async def process(
-        self, balance_repo: BalanceRepository, event_request: EventRequest
-    ):
-        _balance = balance_repo.get_balance(str(event_request.destination))
+    async def process(self, service, event_request: EventRequest):
+        _balance = service.get_user_balance(str(event_request.destination))
         if _balance is None:
-            balance = balance_repo.create_balance(
+            balance = service.create_balance(
                 account_id=event_request.destination,
                 balance=event_request.amount,
             )
@@ -45,10 +42,8 @@ class DepositStrategy(EventStrategy):
 
 
 class WithdrawStrategy(EventStrategy):
-    async def process(
-        self, balance_repo: BalanceRepository, event_request: EventRequest
-    ):
-        _balance = balance_repo.get_balance(str(event_request.origin))
+    async def process(self, service, event_request: EventRequest):
+        _balance = service.get_user_balance(event_request.origin)
         if _balance is None:
             raise Exception("Account not found")
 
@@ -66,17 +61,15 @@ class WithdrawStrategy(EventStrategy):
 
 
 class TransferStrategy(EventStrategy):
-    async def process(
-        self, balance_repo: BalanceRepository, event_request: EventRequest
-    ):
-        _origin = balance_repo.get_balance(str(event_request.origin))
-        _destination = balance_repo.get_balance(str(event_request.destination))
+    async def process(self, service, event_request: EventRequest):
+        _origin = service.get_user_balance(str(event_request.origin))
+        _destination = service.get_user_balance(str(event_request.destination))
 
         if _origin is None:
             raise Exception("Origin account not found")
 
         if _destination is None:
-            _destination = balance_repo.create_balance(
+            _destination = service.create_balance(
                 account_id=event_request.destination,
                 balance=Decimal(0),
             )
