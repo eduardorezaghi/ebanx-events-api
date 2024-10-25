@@ -43,6 +43,8 @@ class BalanceInfo(BaseModel):
 class BalanceWithdrawn(BaseModel):
     origin: BalanceInfo
 
+    # 1. I would use Pydantic's JSON serialization for this, but I kept like that due to the requirements
+    # of ipkiss test suite, which matches strings instead of JSON objects.
     def to_plain_text(self) -> str:
         return f'{{"origin": {{"id": "{self.origin.id}", "balance": {self.origin.balance}}}}}'
 
@@ -50,6 +52,8 @@ class BalanceWithdrawn(BaseModel):
 class BalanceDeposited(BaseModel):
     destination: BalanceInfo
 
+    # 2. I would use Pydantic's JSON serialization for this, but I kept like that due to the requirements
+    # of ipkiss test suite, which matches strings instead of JSON objects.
     def to_plain_text(self) -> str:
         return f'{{"destination": {{"id": "{self.destination.id}", "balance": {self.destination.balance}}}}}'
 
@@ -58,5 +62,7 @@ class BalanceTransfered(BaseModel):
     origin: BalanceInfo
     destination: BalanceInfo
 
+    # 3. I would use Pydantic's JSON serialization for this, but I kept like that due to the requirements
+    # of ipkiss test suite, which matches strings instead of JSON objects.
     def to_plain_text(self) -> str:
         return f'{{"origin": {{"id":"{self.origin.id}", "balance":{self.origin.balance}}}, "destination": {{"id":"{self.destination.id}", "balance":{self.destination.balance}}}}}'

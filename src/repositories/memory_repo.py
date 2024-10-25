@@ -5,6 +5,12 @@ from src.models.balance import Balance
 
 class BalanceRepository:
     def __init__(self, objs: list[Balance] | None = None):
+        # Here, I would use something like a database connection or ORM to interact with the database.
+        # In SQLAlchemy, it would be something like:
+        #       self.session = session
+        #       self.balances = session.query(Balance).all()
+        # and then I would use the session to interact with the database.
+        # For simplicity, I'm using a dictionary to simulate a NoSQL database.
         self.balances: dict[str, Balance] = {}
         if objs:
             for obj in objs:

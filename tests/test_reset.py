@@ -11,4 +11,3 @@ class TestReset(HttpTests):
         # Assert
         assert response.status_code == http.HTTPStatus.OK
         assert response.text == "null"
-        # TODO: Assert that the data has been reset
