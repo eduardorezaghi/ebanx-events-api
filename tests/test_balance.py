@@ -31,7 +31,16 @@ class TestBalance(HttpTests):
 
         # Assert
         assert response.status_code == http.HTTPStatus.OK.value
-        assert response.json() == "89.95"
+        assert response.text == "89.95"
+
+
+    def test_query_balances(self):
+        # Act
+        response = self.client.get("/balance")
+
+        # Assert
+        assert response.status_code == http.HTTPStatus.OK.value
+        assert response.json() == {"1": "89.95", "2": "201.28"}
 
     def test_unexisting_balance_should_return_404(self):
         # Act
@@ -39,4 +48,4 @@ class TestBalance(HttpTests):
 
         # Assert
         assert response.status_code == http.HTTPStatus.NOT_FOUND.value
-        assert response.json() == 0
+        assert response.text == "0"

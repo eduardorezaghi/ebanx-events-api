@@ -2,7 +2,8 @@ from typing import Annotated
 
 import fastapi
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, Response
 from pydantic import PositiveInt
 
 from src.dependencies.repositories import get_balance_repository
@@ -61,8 +62,7 @@ async def get_balances(
             media_type="text/plain",
         )
 
-    return Response(
-        content=balances,
+    return JSONResponse(
+        content=jsonable_encoder({balance.account_id: str(balance.balance) for balance in balances}),
         status_code=fastapi.status.HTTP_200_OK,
-        media_type="text/plain",
     )

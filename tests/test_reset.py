@@ -10,4 +10,4 @@ class TestReset(HttpTests):
 
         # Assert
         assert response.status_code == http.HTTPStatus.OK
-        assert response.text == "null"
+        assert response.text == "OK"
