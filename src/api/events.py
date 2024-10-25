@@ -1,7 +1,7 @@
 from typing import Annotated
 
 import fastapi
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, Response
 
 from src.dependencies.repositories import get_balance_repository
 from src.models import EventRequest
@@ -15,8 +15,7 @@ router = APIRouter(
 
 
 @router.post(
-    "/",
-    status_code=fastapi.status.HTTP_201_CREATED,
+    "",
 )
 async def process_event(
     _request: EventRequest,
@@ -25,16 +24,25 @@ async def process_event(
     strategy = EventProcessStrategy().get_strategy(_request.event_type)
 
     try:
-        return await strategy.process(
+        plaintext_resp = await strategy.process(
             balance_repo=balance_repository, event_request=_request
         )
+
+        return Response(
+            status_code=fastapi.status.HTTP_201_CREATED,
+            media_type="text/plain",
+            content=plaintext_resp,
+        )
+
     except ValueError:
         return Response(
             status_code=fastapi.status.HTTP_400_BAD_REQUEST,
-            content="0",
+            media_type="text/plain",
+            content=b"0",
         )
     except Exception:
         return Response(
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            content="0",
+            media_type="text/plain",
+            content=b"0",
         )
