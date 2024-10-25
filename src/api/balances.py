@@ -49,9 +49,13 @@ async def get_balances(
 
     if balances is None:
         return Response(
-            content="0",
+            content=b"0",
             status_code=fastapi.status.HTTP_404_NOT_FOUND,
-            media_type="application/json",
+            media_type="text/plain",
         )
 
-    return balances
+    return Response(
+        content=balances,
+        status_code=fastapi.status.HTTP_200_OK,
+        media_type="text/plain",
+    )
